@@ -6,7 +6,7 @@
 /*   By: badrien <badrien@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/02/10 13:48:01 by badrien           #+#    #+#             */
-/*   Updated: 2020/02/11 17:57:29 by badrien          ###   ########.fr       */
+/*   Updated: 2020/02/12 17:01:40 by badrien          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,10 +17,15 @@
 #include <time.h>
 #include "../libft/libft.h"
 
+#define S_SNAKE_HEAD 9
+#define S_SNAKE_BODY 7
+#define S_SNAKE_LAST 5
+
 typedef struct s_food
 {
     int x;
     int y;
+    int color;
     int alive;
 }             t_food;
 
@@ -67,6 +72,85 @@ t_body	*ft_bodylast(t_body *body)
 	return (0);
 }
 
+void aff_block(t_mlx *mlx, int size, t_body *body, int color)
+{   
+    int i = (size/2) * -1;
+    int y = (size/2) * -1;
+    while(i < (size/2) + 1)
+    {
+        mlx_pixel_put(mlx->mlx, mlx->window, body->x + i, body->y + y, color);
+        while(y < (size/2) + 1)
+        {
+            mlx_pixel_put(mlx->mlx, mlx->window, body->x + i, body->y + y, color);
+            y++;      
+        }
+    y = (size/2) * -1;
+    i++;
+    }
+}
+
+void aff_head(t_mlx *mlx)
+{
+    int x = -4;
+    int y = -4;
+    while(x < 5)
+    {
+       mlx_pixel_put(mlx->mlx, mlx->window, mlx->snake.x + x, mlx->snake.y + y, mlx->snake.color);
+       while(y < 5)
+       {
+           mlx_pixel_put(mlx->mlx, mlx->window, mlx->snake.x + x, mlx->snake.y + y, mlx->snake.color);
+            y++;      
+       }
+    y = -4;
+    x++;
+    }
+
+    /* Affichage yeux et langue*/
+    if(mlx->snake.direction == 4) // haut
+    {
+        mlx_pixel_put(mlx->mlx, mlx->window, mlx->snake.x + 2, mlx->snake.y + 2, 0xFFFF00);        
+        mlx_pixel_put(mlx->mlx, mlx->window, mlx->snake.x + 2, mlx->snake.y - 2, 0xFFFF00);
+
+        mlx_pixel_put(mlx->mlx, mlx->window, mlx->snake.x + 5, mlx->snake.y, 0xFF0000);
+        mlx_pixel_put(mlx->mlx, mlx->window, mlx->snake.x + 5, mlx->snake.y - 1, 0xFF0000);
+        mlx_pixel_put(mlx->mlx, mlx->window, mlx->snake.x + 5, mlx->snake.y + 1, 0xFF0000);
+        mlx_pixel_put(mlx->mlx, mlx->window, mlx->snake.x + 6, mlx->snake.y - 1, 0xFF0000);
+        mlx_pixel_put(mlx->mlx, mlx->window, mlx->snake.x + 6, mlx->snake.y + 1, 0xFF0000);
+    }
+    if(mlx->snake.direction == 3) // bas
+    {
+        mlx_pixel_put(mlx->mlx, mlx->window, mlx->snake.x - 2, mlx->snake.y - 2, 0xFFFF00);
+        mlx_pixel_put(mlx->mlx, mlx->window, mlx->snake.x - 2, mlx->snake.y + 2, 0xFFFF00);
+
+        mlx_pixel_put(mlx->mlx, mlx->window, mlx->snake.x - 5, mlx->snake.y, 0xFF0000);
+        mlx_pixel_put(mlx->mlx, mlx->window, mlx->snake.x - 5, mlx->snake.y - 1, 0xFF0000);
+        mlx_pixel_put(mlx->mlx, mlx->window, mlx->snake.x - 5, mlx->snake.y + 1, 0xFF0000);
+        mlx_pixel_put(mlx->mlx, mlx->window, mlx->snake.x - 6, mlx->snake.y - 1, 0xFF0000);
+        mlx_pixel_put(mlx->mlx, mlx->window, mlx->snake.x - 6, mlx->snake.y + 1, 0xFF0000);
+    }
+    if(mlx->snake.direction == 2) // bas
+    {
+        mlx_pixel_put(mlx->mlx, mlx->window, mlx->snake.x + 2, mlx->snake.y + 2, 0xFFFF00);
+        mlx_pixel_put(mlx->mlx, mlx->window, mlx->snake.x - 2, mlx->snake.y + 2, 0xFFFF00);
+
+        mlx_pixel_put(mlx->mlx, mlx->window, mlx->snake.x , mlx->snake.y + 5, 0xFF0000);
+        mlx_pixel_put(mlx->mlx, mlx->window, mlx->snake.x - 1, mlx->snake.y + 5, 0xFF0000);
+        mlx_pixel_put(mlx->mlx, mlx->window, mlx->snake.x + 1, mlx->snake.y + 5, 0xFF0000);
+        mlx_pixel_put(mlx->mlx, mlx->window, mlx->snake.x - 1, mlx->snake.y + 6, 0xFF0000);
+        mlx_pixel_put(mlx->mlx, mlx->window, mlx->snake.x + 1, mlx->snake.y + 6, 0xFF0000);
+    }
+    if(mlx->snake.direction == 1) // haut
+    {
+        mlx_pixel_put(mlx->mlx, mlx->window, mlx->snake.x - 2, mlx->snake.y - 2, 0xFFFF00);
+        mlx_pixel_put(mlx->mlx, mlx->window, mlx->snake.x + 2, mlx->snake.y - 2, 0xFFFF00);
+
+        mlx_pixel_put(mlx->mlx, mlx->window, mlx->snake.x , mlx->snake.y - 5, 0xFF0000);
+        mlx_pixel_put(mlx->mlx, mlx->window, mlx->snake.x - 1, mlx->snake.y - 5, 0xFF0000);
+        mlx_pixel_put(mlx->mlx, mlx->window, mlx->snake.x + 1, mlx->snake.y - 5, 0xFF0000);
+        mlx_pixel_put(mlx->mlx, mlx->window, mlx->snake.x - 1, mlx->snake.y - 6, 0xFF0000);
+        mlx_pixel_put(mlx->mlx, mlx->window, mlx->snake.x + 1, mlx->snake.y - 6, 0xFF0000);
+    }
+}
 
 void aff_snake(t_mlx *mlx)
 {
@@ -76,53 +160,14 @@ void aff_snake(t_mlx *mlx)
     t_body *body;
     body = mlx->snake.body;
 
-    while(body->next != NULL)
+    while(body->next != NULL) // tous les block
     {
-        i = -3;
-        y = -3;
-        while(i < 4)
-        {
-            mlx_pixel_put(mlx->mlx, mlx->window, body->x + i, body->y + y, 0x9FE855);
-            while(y < 4)
-            {
-                mlx_pixel_put(mlx->mlx, mlx->window, body->x + i, body->y + y, 0x9FE855);
-                y++;      
-            }
-        y = -3;
-        i++;
-
-        }
-    body = body->next;
-    }
-    
-    i = -2;
-    y = -2;
-    while(i < 3)
-    {
-        mlx_pixel_put(mlx->mlx, mlx->window, body->x + i, body->y + y, 0xFFD700);
-        while(y < 3)
-        {
-            mlx_pixel_put(mlx->mlx, mlx->window, body->x + i, body->y + y, 0xFFD700);
-            y++;      
-        }
-    y = -2;
-    i++;
-    }
-    
-    i = -4;
-    y = -4;
-    while(i < 5)
-    {
-       mlx_pixel_put(mlx->mlx, mlx->window, mlx->snake.x + i, mlx->snake.y + y, mlx->snake.color);
-       while(y < 5)
-       {
-           mlx_pixel_put(mlx->mlx, mlx->window, mlx->snake.x + i, mlx->snake.y + y, mlx->snake.color);
-            y++;      
-       }
-    y = -4;
-    i++;
+        aff_block(mlx, S_SNAKE_BODY, body, 0x9FE855);
+        body = body->next;
     }
 
+    aff_block(mlx, S_SNAKE_LAST, body, 0xE58B05); //le dernier block
+    aff_head(mlx);
 }
 
 void aff_food(t_mlx *mlx)
@@ -134,10 +179,10 @@ void aff_food(t_mlx *mlx)
     y = -4;
     while(i < 5)
     {
-       mlx_pixel_put(mlx->mlx, mlx->window, mlx->food.x + i, mlx->food.y + y, 0xB22222);
+       mlx_pixel_put(mlx->mlx, mlx->window, mlx->food.x + i, mlx->food.y + y, mlx->food.color);
        while(y < 5)
        {
-           mlx_pixel_put(mlx->mlx, mlx->window, mlx->food.x + i, mlx->food.y + y, 0xB22222);
+           mlx_pixel_put(mlx->mlx, mlx->window, mlx->food.x + i, mlx->food.y + y, mlx->food.color);
             y++;      
        }
     y = -4;
@@ -149,7 +194,7 @@ void aff_bordure(t_mlx *mlx)
 {
     int x = 50;
     int y = 50;
-    mlx_string_put(mlx->mlx, mlx->window, 50, 40, 0x00FF00, "Snake 0.1 :");
+    mlx_string_put(mlx->mlx, mlx->window, 50, 40, 0x00FF00, "Snake 1.0 :");
 
     mlx_string_put(mlx->mlx, mlx->window, 150, 40, 0x00FF00, "Score = ");
     mlx_string_put(mlx->mlx, mlx->window, 200, 40, 0x00FF00, ft_itoa(mlx->snake.score));
@@ -181,6 +226,7 @@ void food(t_mlx *mlx)
     mlx->food.x= (rand() % (341 - 59 + 1)) + 59; // (rand() % (max - min + 1)) + min;
     mlx->food.y= (rand() % (341 - 59 + 1)) + 59;
     mlx->food.alive = 1;
+    mlx->food.color = 0xE30A0A;
 }
 
 t_body *add_body(int *x, int *y)
@@ -201,10 +247,11 @@ void veriff(t_mlx *mlx)
 {
     t_body *next;
     
-    next = mlx->snake.body;
+    next = mlx->snake.body->next;
+    if(!(mlx->snake.body->next == NULL))
     while(next != NULL)
     {
-        if((mlx->snake.x >= next->x - 1 && mlx->snake.x <= next->x + 1) && (mlx->snake.y >= next->y - 1 && mlx->snake.y <= next->y + 1))
+        if((mlx->snake.x >= next->x && mlx->snake.x <= next->x ) && (mlx->snake.y >= next->y && mlx->snake.y <= next->y ))
         {
         mlx->snake.direction = 5;
         mlx_string_put(mlx->mlx, mlx->window, 170, 150, 0xFF0000, "GAME OVER");
@@ -240,10 +287,14 @@ void reload(t_mlx *mlx)
 
 int swap_direction(int keycode, t_mlx *mlx)
 {
+    printf("keycode = %d\n", keycode);
+    
+    if(keycode == 258 && mlx->go == 0)
+        mlx->snake.direction = 7;
     if(keycode == 36)
         mlx->go = 1;
     if(keycode == 53)
-        mlx->snake.direction = 5;
+        mlx->snake.direction = 6;
     if (keycode == 126 && mlx->snake.direction != 2) // haut
         mlx->snake.direction = 1;
     if (keycode == 125 && mlx->snake.direction != 1) // bas
@@ -259,9 +310,8 @@ int inc_tail(t_mlx *mlx ,t_body *body, int x, int y)
 {
     if(body == NULL)
         return (0);
-
     inc_tail(mlx , body->next, body->x, body->y);
-    if(body->first < 3)
+    if(body->first < 2)
         body->first += 1;
     else
     {
@@ -272,17 +322,20 @@ int inc_tail(t_mlx *mlx ,t_body *body, int x, int y)
     return (0);
 }
 
+int lauch(void);
+
 int superloop(t_mlx *mlx)
 {
     usleep(mlx->snake.vitesse);
 
-   inc_tail(mlx, mlx->snake.body, mlx->snake.x, mlx->snake.y);
+    if(mlx->go == 0)
+        return (0);
+
+    inc_tail(mlx, mlx->snake.body, mlx->snake.x, mlx->snake.y);
 
     mlx->snake.body->x = mlx->snake.x;
     mlx->snake.body->y = mlx->snake.y;
-    
-    if(mlx->go == 0)
-        return (0);
+
     if(mlx->snake.direction == 4)
        mlx->snake.x += 2;
     if(mlx->snake.direction == 3)
@@ -294,22 +347,34 @@ int superloop(t_mlx *mlx)
     if(mlx->snake.direction == 5)
     {
         sleep(2);
+        mlx_clear_window(mlx->mlx, mlx->window);
+        mlx_string_put(mlx->mlx,mlx->window,50,200,0xFFFFFF,"press 'maj droite' et 'enter droite'");
+        mlx_string_put(mlx->mlx,mlx->window,110,220,0xFFFFFF,"pour relancer le jeu");
+        mlx->go = 0;
+    }
+    if(mlx->snake.direction == 6)
+    {
+        mlx->go = 0;
         free(mlx);
         mlx_destroy_window(mlx->mlx, mlx->window);
-        exit (-1);
+        exit(-1);
     }
-    
-    reload(mlx);
+    if(mlx->snake.direction == 7 )//&& mlx->go == 0)
+    {
+        reload(mlx);
+        //mlx_clear_window(mlx->mlx, mlx->window);
+        //mlx_string_put(mlx->mlx,mlx->window,50,200,0xFFFFFF,"press 'maj droite' pour relancer le jeu");
+        lauch();
+    }
+    if(mlx->go != 0)
+        reload(mlx);
     return (0);
 }
 
-int main(void)
+int setup(t_mlx *mlx)
 {
-    t_mlx *mlx;
-
-    mlx = (t_mlx *) malloc(sizeof(t_mlx));
     mlx->mlx = mlx_init();
-    mlx->window = mlx_new_window(mlx->mlx, 400, 400, "Snake 0.2");
+    mlx->window = mlx_new_window(mlx->mlx, 400, 400, "Snake 1.0");
     mlx->go = 0;
     mlx->snake.x = 200;
     mlx->snake.y = 200;
@@ -320,11 +385,23 @@ int main(void)
     mlx->food.alive = 0;
     mlx->snake.body = add_body(&(mlx->snake.x)+1, &(mlx->snake.y)+1);
     reload(mlx);
+    return (0);
+}
+
+int lauch(void)
+{
+    t_mlx *mlx;
+    mlx = (t_mlx *) malloc(sizeof(t_mlx));
+    
+    setup(mlx);
     
     mlx_hook(mlx->window, 2, 0, swap_direction, mlx); // 2 pour keypress
-    //mlx_hook(mlx->window, 3, 0, swap_direction, mlx); // 3 pour keyrelease
-    
     mlx_loop_hook(mlx->mlx, superloop, mlx);
     mlx_loop(mlx->mlx);
     return (0);
+}
+
+int main(void)
+{
+    lauch();
 }
