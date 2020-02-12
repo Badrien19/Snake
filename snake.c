@@ -6,7 +6,7 @@
 /*   By: badrien <badrien@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/02/10 13:48:01 by badrien           #+#    #+#             */
-/*   Updated: 2020/02/12 17:07:42 by badrien          ###   ########.fr       */
+/*   Updated: 2020/02/12 17:10:35 by badrien          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -364,6 +364,8 @@ int superloop(t_mlx *mlx)
         reload(mlx);
         //mlx_clear_window(mlx->mlx, mlx->window);
         //mlx_string_put(mlx->mlx,mlx->window,50,200,0xFFFFFF,"press 'maj droite' pour relancer le jeu");
+        free(mlx);
+        mlx_destroy_window(mlx->mlx, mlx->window);
         lauch();
     }
     if(mlx->go != 0)
