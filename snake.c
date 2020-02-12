@@ -6,7 +6,7 @@
 /*   By: badrien <badrien@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/02/10 13:48:01 by badrien           #+#    #+#             */
-/*   Updated: 2020/02/12 17:01:40 by badrien          ###   ########.fr       */
+/*   Updated: 2020/02/12 17:07:42 by badrien          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -216,6 +216,8 @@ void aff_bordure(t_mlx *mlx)
     y = 50;
     while(y < 350)
         mlx_pixel_put(mlx->mlx, mlx->window, x, y++, 0xFFFFFF);
+    
+    mlx_string_put(mlx->mlx, mlx->window, 50, 380, 0x00FF00, "Press \"ESC\" to quit :C");
 }
 
 void food(t_mlx *mlx)
@@ -286,9 +288,7 @@ void reload(t_mlx *mlx)
 }
 
 int swap_direction(int keycode, t_mlx *mlx)
-{
-    printf("keycode = %d\n", keycode);
-    
+{    
     if(keycode == 258 && mlx->go == 0)
         mlx->snake.direction = 7;
     if(keycode == 36)
